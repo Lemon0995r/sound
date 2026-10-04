@@ -1,0 +1,29 @@
+name: Build Windows exe
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build exe
+        run: pyinstaller --noconsole --onefile --name VoiceProcessor --collect-all sounddevice voice_app.py
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: VoiceProcessor-windows
+          path: dist/VoiceProcessor.exe
+          if-no-files-found: error
